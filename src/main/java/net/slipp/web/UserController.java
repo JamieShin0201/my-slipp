@@ -1,7 +1,5 @@
 package net.slipp.web;
 
-import java.lang.ProcessBuilder.Redirect;
-
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,14 +42,12 @@ public class UserController {
 	
 	@GetMapping("/{id}/form")
 	public String updateForm(@PathVariable Long id, Model model, HttpSession session) {
-		Object tempUser = session.getAttribute("sessionedUser");
-		
-		if(tempUser == null) {
+		if(!HttpSessionUtils.isLoginUser(session)) {
 			return "redirect:/users/loginForm";
 		}
 		
-		User sessionedUser = (User) tempUser;
-		if(!id.equals(sessionedUser.getId())) {
+		User sessionedUser = HttpSessionUtils.getUserFromSession(session);
+		if(!sessionedUser.matchId(id)) {
 			throw new IllegalStateException("자신의 정보만 수정할 수 있습니다.");
 		}
 		
@@ -63,14 +59,12 @@ public class UserController {
 	
 	@PutMapping("/{id}")
 	public String update(@PathVariable Long id, User updateUser, HttpSession session) {
-Object tempUser = session.getAttribute("sessionedUser");
-		
-		if(tempUser == null) {
+		if(!HttpSessionUtils.isLoginUser(session)) {
 			return "redirect:/users/loginForm";
 		}
 		
-		User sessionedUser = (User) tempUser;
-		if(!id.equals(sessionedUser.getId())) {
+		User sessionedUser = HttpSessionUtils.getUserFromSession(session);
+		if(!sessionedUser.matchId(id)) {
 			throw new IllegalStateException("자신의 정보만 수정할 수 있습니다.");
 		}
 		
@@ -91,20 +85,20 @@ Object tempUser = session.getAttribute("sessionedUser");
 	public String login(String userId, String password, HttpSession session) {
 		User user = userRepository.findByUserId(userId);
 		
-		if(user == null || !password.equals(user.getPassword())) {
+		if(user == null || !user.matchPassword(password)) {
 			System.out.println("Login Failure!");
 			return "redirect:/users/loginForm";
 		}
 		
 		System.out.println("Login Success!");
-		session.setAttribute("sessionedUser", user);
+		session.setAttribute(HttpSessionUtils.USER_SESSION_KEY, user);
 		
 		return "redirect:/";
 	}
 	
 	@GetMapping("/logout")
 	public String logout(HttpSession session) {
-		session.removeAttribute("sessionedUser");
+		session.removeAttribute(HttpSessionUtils.USER_SESSION_KEY);
 		
 		return "redirect:/";
 	}
