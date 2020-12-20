@@ -1,13 +1,22 @@
 package net.slipp.web;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import net.slipp.domain.QuestionReposetory;
 
 @Controller
 public class HomeController {
 	
+	@Autowired
+	private QuestionReposetory questionReposetory;
+	
 	@GetMapping("")
-	public String home() {
+	public String home(Model model) {
+		model.addAttribute("questions", questionReposetory.findAll());
+		
 		return "index";
 	}
 	
