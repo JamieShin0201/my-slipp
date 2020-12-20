@@ -1,1 +1,2 @@
 INSERT INTO USER(ID, USER_ID, PASSWORD, NAME, EMAIL) VALUES(1, 'jamie', '1234', '종명', 'jamie@gmail.com')
+INSERT INTO USER(ID, USER_ID, PASSWORD, NAME, EMAIL) VALUES(2, 'test', '1234', '테스트', 'test@gmail.com')
