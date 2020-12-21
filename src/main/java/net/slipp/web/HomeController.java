@@ -5,13 +5,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import net.slipp.domain.QuestionReposetory;
+import net.slipp.domain.QuestionRepository;
 
 @Controller
 public class HomeController {
 	
 	@Autowired
-	private QuestionReposetory questionReposetory;
+	private QuestionRepository questionReposetory;
 	
 	@GetMapping("")
 	public String home(Model model) {
