@@ -23,7 +23,7 @@ public class ApiAnswerController {
 	private QuestionRepository questionRepository;
 
 	@Autowired
-	private AnswerRepository AnswerRepository;
+	private AnswerRepository answerRepository;
 
 	@PostMapping("")
 	public Answer create(@PathVariable Long questionId, String contents, HttpSession session) {
@@ -35,8 +35,9 @@ public class ApiAnswerController {
 		Question question = questionRepository.findById(questionId).get();
 
 		Answer answer = new Answer(loginUser, question, contents);
+		question.addAnswer();
 
-		return AnswerRepository.save(answer);
+		return answerRepository.save(answer);
 	}
 
 	@DeleteMapping("/{id}")
@@ -45,14 +46,18 @@ public class ApiAnswerController {
 			return Result.fail("로그인 해야합니다");
 		}
 
-		Answer answer = AnswerRepository.findById(id).get();
+		Answer answer = answerRepository.findById(id).get();
 		User loginUser = HttpSessionUtils.getUserFromSession(session);
 		if (!answer.isSameWriter(loginUser)) {
 			return Result.fail("자신의 글만 삭제할 수 있습니다.");
 		}
 
-		AnswerRepository.deleteById(id);
-
+		answerRepository.deleteById(id);
+		
+		Question question = questionRepository.findById(questionId).get();
+		question.deleteAnswer();
+		questionRepository.save(question);
+		
 		return Result.ok();
 	}
 

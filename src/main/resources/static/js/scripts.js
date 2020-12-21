@@ -14,6 +14,7 @@ function onSuccess(data, status) {
 	const template = answerTemplate.format(data.writer.userId, data.formattedCreateDate, data.contents, data.question.id, data.id);
 
 	$(template).insertBefore(".answer-write");
+	$(".qna-comment strong").text(data.question.countOfAnswer);
 
 	$(".answer-write textarea").val("");
 }
@@ -60,6 +61,8 @@ $(document).on('click', '.link-delete-article', function(e) {
 			} else {
 				alert(data.errorMessage);
 			}
+
+			$(".qna-comment strong").text($(".qna-comment strong").text() - 1);
 		}
 	});
 	
